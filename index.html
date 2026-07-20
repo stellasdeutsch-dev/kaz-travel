@@ -4,7 +4,7 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>QAZAQSTAN — путеводитель по Великой степи</title>
-  <meta name="description" content="Интерактивный гид по Казахстану: 3D-карта страны, прогулки по легендарным местам, регионы, объекты ЮНЕСКО и практическая информация для путешественника." />
+  <meta name="description" content="Интерактивный гид по Казахстану: 3D-карта страны, прогулки по легендарным местам и всё для планирования поездки." />
   <meta name="theme-color" content="#00afca" />
   <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Ccircle cx='16' cy='16' r='11' fill='%23FEC50C'/%3E%3C/svg%3E" />
   <link rel="preconnect" href="https://fonts.googleapis.com" />
@@ -21,41 +21,32 @@
     </div>
   </div>
 
+  <!-- 3D-сцена: фиксированный слой за контентом, виден на главной и в прогулках -->
+  <div id="stage">
+    <canvas id="scene"></canvas>
+    <div id="labels"></div>
+  </div>
+
   <header id="nav">
-    <a class="logo" href="#top"><span class="logo-dot"></span>QAZAQSTAN<span class="logo-thin">.travel</span></a>
+    <a class="logo" href="#/"><span class="logo-dot"></span>QAZAQSTAN<span class="logo-thin">.travel</span></a>
     <nav class="nav-links">
-      <a href="#map">Карта</a>
-      <a href="#destinations">Направления</a>
-      <a href="#regions">Регионы</a>
-      <a href="#unesco">ЮНЕСКО</a>
-      <a href="#events">События</a>
-      <a href="#plan">Поездка</a>
+      <a href="#/" data-nav="home">Карта</a>
+      <a href="#/places" data-nav="places">Места</a>
+      <a href="#/plan" data-nav="plan">Спланировать</a>
     </nav>
     <a class="btn btn-primary btn-sm nav-cta" href="https://kazakhstan.travel/ru" target="_blank" rel="noopener">Официальный портал</a>
   </header>
 
-  <main id="top">
+  <!-- ======================= ГЛАВНАЯ ======================= -->
+  <main data-page="home">
 
-    <!-- ===== HERO + 3D КАРТА ===== -->
-    <section id="map" class="hero">
-      <div id="stage">
-        <canvas id="scene"></canvas>
-        <div id="labels"></div>
-      </div>
-
+    <section class="hero">
       <div class="hero-content">
         <div class="hero-eyebrow reveal">Девятая страна мира по площади</div>
         <h1 class="hero-title reveal">КАЗАХ<span class="grad">СТАН</span></h1>
-        <p class="hero-sub reveal">Вращайте карту, выбирайте точку — и отправляйтесь на прогулку по легендарным местам Великой степи в 3D.</p>
-        <div class="hero-chips reveal">
-          <span class="chip">6 объектов ЮНЕСКО</span>
-          <span class="chip">14 национальных парков</span>
-          <span class="chip">20 регионов</span>
-        </div>
+        <p class="hero-sub reveal">Прогулки по легендарным местам — прямо на карте.</p>
       </div>
-
       <div class="hero-hint"><span class="hint-ico">✦</span> Вращайте карту · нажмите на точку</div>
-
       <button class="scroll-down" id="scrollDown" aria-label="Листать вниз">
         <svg width="18" height="18" viewBox="0 0 24 24" fill="none"><path d="M12 4v16m0 0l-6-6m6 6l6-6" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>
       </button>
@@ -66,144 +57,167 @@
         <div class="panel-body">
           <div class="panel-region" id="panelRegion"></div>
           <h3 class="panel-name" id="panelName"></h3>
-          <p class="panel-desc" id="panelDesc"></p>
           <div class="panel-facts" id="panelFacts"></div>
           <div class="panel-actions">
-            <button class="btn btn-primary" id="panelWalk">
-              Прогуляться в 3D
-              <svg width="15" height="15" viewBox="0 0 24 24" fill="none"><path d="M5 12h14m0 0l-6-6m6 6l-6 6" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"/></svg>
-            </button>
-            <a class="btn btn-ghost" id="panelMaps" target="_blank" rel="noopener" title="Открыть в Google Maps">
-              <svg width="17" height="17" viewBox="0 0 24 24" fill="none"><path d="M12 21s7-6.1 7-11a7 7 0 10-14 0c0 4.9 7 11 7 11z" stroke="currentColor" stroke-width="1.9"/><circle cx="12" cy="10" r="2.6" stroke="currentColor" stroke-width="1.9"/></svg>
-            </a>
+            <button class="btn btn-primary" id="panelWalk">Прогуляться в 3D</button>
+            <a class="btn btn-ghost" id="panelMore">Подробнее</a>
           </div>
         </div>
       </aside>
     </section>
 
-    <div class="marquee" aria-hidden="true">
-      <div class="marquee-track">
-        <span>ВЕЛИКАЯ СТЕПЬ ✦ ШЁЛКОВЫЙ ПУТЬ ✦ ТЯНЬ-ШАНЬ ✦ КАСПИЙ ✦ САРЫАРКА ✦ АЛТАЙ ✦ МАНГИСТАУ ✦ СЕМИРЕЧЬЕ ✦ </span>
-        <span>ВЕЛИКАЯ СТЕПЬ ✦ ШЁЛКОВЫЙ ПУТЬ ✦ ТЯНЬ-ШАНЬ ✦ КАСПИЙ ✦ САРЫАРКА ✦ АЛТАЙ ✦ МАНГИСТАУ ✦ СЕМИРЕЧЬЕ ✦ </span>
+    <div class="after-hero">
+
+      <div class="marquee" aria-hidden="true">
+        <div class="marquee-track">
+          <span>ВЕЛИКАЯ СТЕПЬ ✦ ШЁЛКОВЫЙ ПУТЬ ✦ ТЯНЬ-ШАНЬ ✦ КАСПИЙ ✦ САРЫАРКА ✦ АЛТАЙ ✦ МАНГИСТАУ ✦ СЕМИРЕЧЬЕ ✦ </span>
+          <span>ВЕЛИКАЯ СТЕПЬ ✦ ШЁЛКОВЫЙ ПУТЬ ✦ ТЯНЬ-ШАНЬ ✦ КАСПИЙ ✦ САРЫАРКА ✦ АЛТАЙ ✦ МАНГИСТАУ ✦ СЕМИРЕЧЬЕ ✦ </span>
+        </div>
       </div>
+
+      <!-- Локации: большие фото-тайлы -->
+      <section id="places" class="tiles" aria-label="Направления"></section>
+
+      <!-- Чем заняться: лента иконок -->
+      <section class="strip-wrap">
+        <h2 class="strip-title reveal">Чем заняться</h2>
+        <div class="strip" id="expStrip"></div>
+      </section>
+
+      <!-- Большие цифры -->
+      <section class="bignums">
+        <div class="bignum reveal"><div class="bignum-v" data-count="2724902">0</div><div class="bignum-c">км² территории</div></div>
+        <div class="bignum reveal"><div class="bignum-v" data-count="14">0</div><div class="bignum-c">национальных парков</div></div>
+        <div class="bignum reveal"><div class="bignum-v" data-count="6">0</div><div class="bignum-c">объектов ЮНЕСКО</div></div>
+        <div class="bignum reveal"><div class="bignum-v" data-count="20">0</div><div class="bignum-c">регионов</div></div>
+      </section>
+
+      <!-- CTA -->
+      <section class="cta-wrap">
+        <div class="cta reveal">
+          <h2>Готовы увидеть<br/><span class="gold">Великую степь?</span></h2>
+          <div class="cta-actions">
+            <a class="btn btn-gold" href="#/plan">Спланировать поездку</a>
+            <a class="btn btn-ghost" href="https://kazakhstan.travel/ru" target="_blank" rel="noopener">kazakhstan.travel</a>
+          </div>
+        </div>
+      </section>
+
+      <footer>
+        <div class="foot-inner">
+          <div class="foot-left"><span class="logo-dot"></span>QAZAQSTAN<span class="logo-thin">.travel</span></div>
+          <div class="foot-note">Концепт-редизайн. Фото — Wikimedia Commons, лицензии указаны на страницах мест.</div>
+          <div>© <span class="year"></span></div>
+        </div>
+      </footer>
     </div>
+  </main>
 
-    <!-- ===== НАПРАВЛЕНИЯ ===== -->
-    <section id="destinations" class="section">
-      <div class="section-head reveal">
-        <div class="section-eyebrow">Направления</div>
-        <h2 class="section-title">Восемь мест, ради которых стоит пересечь степь</h2>
-        <p class="section-sub">Реальные фотографии, подробные описания и 3D-прогулка по каждому объекту.</p>
-      </div>
-      <div class="cards" id="cards"></div>
-    </section>
-
-    <!-- ===== ВИДЫ ТУРИЗМА ===== -->
-    <section id="experiences" class="section-alt">
-      <div class="section-inner section">
-        <div class="section-head reveal">
-          <div class="section-eyebrow">Впечатления</div>
-          <h2 class="section-title">Чем заняться в Казахстане</h2>
-          <p class="section-sub">От ледников Тянь-Шаня до наблюдения за пуском ракеты — страна размером с Западную Европу вмещает почти все виды путешествий.</p>
-        </div>
-        <div class="exp-grid" id="expGrid"></div>
+  <!-- ======================= СТРАНИЦА МЕСТА ======================= -->
+  <main data-page="place" hidden>
+    <section class="place-hero">
+      <div class="place-media"><img id="plImg" alt="" /></div>
+      <div class="place-overlay">
+        <div class="place-region" id="plRegion"></div>
+        <h1 class="place-name" id="plName"></h1>
+        <p class="place-tag" id="plTag"></p>
       </div>
     </section>
 
-    <!-- ===== РЕГИОНЫ ===== -->
-    <section id="regions" class="section">
-      <div class="section-head reveal">
-        <div class="section-eyebrow">География</div>
-        <h2 class="section-title">Шесть Казахстанов в одной стране</h2>
-        <p class="section-sub">От Каспия до Алтая почти три тысячи километров — но с марта 2024 года вся страна живёт в одном часовом поясе. Каждый край стоит отдельной поездки.</p>
-      </div>
-      <div class="regions" id="regionGrid"></div>
-    </section>
+    <section class="place-body">
+      <div class="place-facts" id="plFacts"></div>
 
-    <!-- ===== ЮНЕСКО ===== -->
-    <section id="unesco" class="section-warm">
-      <div class="section-inner section">
-        <div class="section-head reveal">
-          <div class="section-eyebrow">Всемирное наследие</div>
-          <h2 class="section-title">Объекты ЮНЕСКО</h2>
-          <p class="section-sub">Три культурных и три природных объекта — от мавзолея XIV века до степей, где гнездятся розовые фламинго.</p>
-        </div>
-        <div class="unesco" id="unescoGrid"></div>
+      <div class="place-actions">
+        <button class="btn btn-primary btn-lg" id="plWalk">
+          Прогуляться в 3D
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none"><path d="M5 12h14m0 0l-6-6m6 6l-6 6" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"/></svg>
+        </button>
+        <a class="btn btn-ghost btn-lg" id="plMaps" target="_blank" rel="noopener">
+          <svg width="17" height="17" viewBox="0 0 24 24" fill="none"><path d="M12 21s7-6.1 7-11a7 7 0 10-14 0c0 4.9 7 11 7 11z" stroke="currentColor" stroke-width="1.9"/><circle cx="12" cy="10" r="2.6" stroke="currentColor" stroke-width="1.9"/></svg>
+          Google Maps
+        </a>
       </div>
-    </section>
 
-    <!-- ===== КОГДА ЕХАТЬ + ПРАКТИКА ===== -->
-    <section id="plan" class="section">
-      <div class="section-head reveal">
-        <div class="section-eyebrow">Планирование</div>
-        <h2 class="section-title">Когда ехать</h2>
-        <p class="section-sub">Климат резко континентальный: разница между зимой и летом достигает семидесяти градусов.</p>
-      </div>
-      <div class="seasons" id="seasonGrid"></div>
+      <p class="place-short" id="plShort"></p>
 
-      <div class="section-head reveal" style="margin-top:70px">
-        <h2 class="section-title">Что нужно знать</h2>
-      </div>
-      <div class="practical" id="practicalGrid"></div>
-    </section>
+      <div class="acc" id="plAcc">
+        <button class="acc-head" data-acc="story">
+          <span>История места</span>
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none"><path d="M6 9l6 6 6-6" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"/></svg>
+        </button>
+        <div class="acc-body" id="plStory"></div>
 
-    <!-- ===== СОБЫТИЯ ===== -->
-    <section id="events" class="section-alt">
-      <div class="section-inner section">
-        <div class="section-head reveal">
-          <div class="section-eyebrow">Календарь</div>
-          <h2 class="section-title">Ради чего приехать в конкретный месяц</h2>
-          <p class="section-sub">Шесть событий, вокруг которых удобно строить поездку.</p>
-        </div>
-        <div class="events" id="eventGrid"></div>
+        <button class="acc-head" data-acc="plan">
+          <span>Как спланировать</span>
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none"><path d="M6 9l6 6 6-6" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"/></svg>
+        </button>
+        <div class="acc-body" id="plPlan"></div>
       </div>
-    </section>
 
-    <!-- ===== О СТРАНЕ ===== -->
-    <section id="about" class="section-warm">
-      <div class="section-inner section about-inner">
-        <div class="about-text reveal">
-          <div class="section-eyebrow">О стране</div>
-          <h2 class="section-title">Больше Западной Европы,<br/>тише любой её столицы</h2>
-          <p>Казахстан занимает девятое место в мире по площади и остаётся самой большой страной без выхода к океану — при этом его омывают Каспийское и Аральское моря. Граница с Россией тянется на 7548 километров, с Китаем — на 1783.</p>
-          <p>Климат резко континентальный, и размах впечатляет: в Туркестане фиксировали +49 °C, а в акмолинском Атбасаре −57 °C. Астану называют одной из самых холодных столиц мира — холоднее только Улан-Батор и Рейкьявик.</p>
-        </div>
-        <div class="about-stats">
-          <div class="stat reveal"><div class="stat-num" data-count="2724902">0</div><div class="stat-cap">км² территории</div></div>
-          <div class="stat reveal"><div class="stat-num" data-count="6">0</div><div class="stat-cap">объектов ЮНЕСКО</div></div>
-          <div class="stat reveal"><div class="stat-num" data-count="14">0</div><div class="stat-cap">национальных парков</div></div>
-          <div class="stat reveal"><div class="stat-num" data-count="1991">0</div><div class="stat-cap">год независимости</div></div>
-        </div>
-      </div>
-    </section>
+      <div class="place-credit" id="plCredit"></div>
 
-    <!-- ===== CTA ===== -->
-    <section class="section cta-wrap">
-      <div class="cta reveal">
-        <h2>Готовы увидеть<br/><span class="gold">Великую степь?</span></h2>
-        <p>Маршруты, визовые правила, события и проверенные операторы — на официальном туристическом портале страны.</p>
-        <div class="cta-actions">
-          <a class="btn btn-gold" href="https://kazakhstan.travel/ru" target="_blank" rel="noopener">Перейти на kazakhstan.travel</a>
-          <a class="btn btn-ghost" href="#map">Вернуться к карте</a>
-        </div>
-      </div>
+      <a class="place-next" id="plNext" href="#/">
+        <span class="place-next-label">Следующее место</span>
+        <span class="place-next-name" id="plNextName"></span>
+        <svg width="22" height="22" viewBox="0 0 24 24" fill="none"><path d="M5 12h14m0 0l-6-6m6 6l-6 6" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"/></svg>
+      </a>
     </section>
   </main>
 
-  <footer>
-    <div class="foot-inner">
-      <div class="foot-left"><span class="logo-dot"></span>QAZAQSTAN<span class="logo-thin">.travel</span></div>
-      <div class="foot-note">
-        Концепт-редизайн официального портала. Фотографии — Wikimedia Commons, лицензии указаны у каждого снимка.
-        Актуальные визовые правила и события сверяйте на <a href="https://kazakhstan.travel/ru" target="_blank" rel="noopener">kazakhstan.travel</a>.
-      </div>
-      <div>© <span id="year"></span></div>
-    </div>
-  </footer>
+  <!-- ======================= СПЛАНИРОВАТЬ ======================= -->
+  <main data-page="plan" hidden>
+    <section class="plan-head">
+      <h1 class="plan-title reveal">Спланировать<br/>поездку</h1>
+    </section>
 
-  <!-- ===== РЕЖИМ 3D-ПРОГУЛКИ ===== -->
+    <!-- Сезоны: интерактивный переключатель -->
+    <section class="seasons-widget reveal" id="seasonWidget">
+      <div class="seg" id="seasonSeg" role="tablist"></div>
+      <div class="season-stage" id="seasonStage">
+        <div class="season-temp" id="seasonTemp"></div>
+        <div class="season-info">
+          <div class="season-months" id="seasonMonths"></div>
+          <p class="season-text" id="seasonText"></p>
+        </div>
+      </div>
+    </section>
+
+    <!-- События: горизонтальная лента -->
+    <section class="lane-wrap">
+      <h2 class="lane-title reveal">Календарь года</h2>
+      <div class="lane" id="eventLane"></div>
+    </section>
+
+    <!-- Практика: аккордеон -->
+    <section class="plan-practical">
+      <h2 class="lane-title reveal">Что нужно знать</h2>
+      <div class="acc" id="practicalAcc"></div>
+    </section>
+
+    <!-- ЮНЕСКО: лента-таймлайн -->
+    <section class="lane-wrap">
+      <h2 class="lane-title reveal">Наследие ЮНЕСКО</h2>
+      <div class="lane" id="unescoLane"></div>
+    </section>
+
+    <!-- Регионы: компакт -->
+    <section class="plan-regions">
+      <h2 class="lane-title reveal">Куда ехать за чем</h2>
+      <div class="regions" id="regionGrid"></div>
+    </section>
+
+    <footer>
+      <div class="foot-inner">
+        <div class="foot-left"><span class="logo-dot"></span>QAZAQSTAN<span class="logo-thin">.travel</span></div>
+        <div class="foot-note">Визовые правила меняются — сверяйтесь с <a href="https://www.gov.kz/memleket/entities/mfa" target="_blank" rel="noopener">МИД РК</a> и <a href="https://kazakhstan.travel/ru" target="_blank" rel="noopener">kazakhstan.travel</a>.</div>
+        <div>© <span class="year"></span></div>
+      </div>
+    </footer>
+  </main>
+
+  <!-- ======================= 3D-ПРОГУЛКА ======================= -->
   <div id="walkUI">
-    <button class="btn btn-ghost walk-back" id="walkBack">← К карте</button>
+    <button class="btn btn-ghost walk-back" id="walkBack">← Назад</button>
     <div class="walk-hint">Мышь — осмотр · колесо — приближение · <b>WASD</b> — перемещение</div>
     <div class="walk-vignette"></div>
 
@@ -215,19 +229,15 @@
       <div class="wi-scroll">
         <div class="wi-region" id="wiRegion"></div>
         <h2 class="wi-name" id="wiName"></h2>
-
         <div class="wi-photo"><img id="wiImg" alt="" /></div>
         <div class="wi-credit" id="wiCredit"></div>
-
         <p class="wi-lead" id="wiLead"></p>
         <div class="wi-facts" id="wiFacts"></div>
-
         <button class="wi-toggle" id="wiToggle" aria-expanded="false">
           <span>Подробно об объекте</span>
           <svg width="16" height="16" viewBox="0 0 24 24" fill="none"><path d="M6 9l6 6 6-6" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"/></svg>
         </button>
         <div class="wi-detail" id="wiDetail"></div>
-
         <div class="wi-block">
           <h4>Как спланировать</h4>
           <div class="wi-row">
@@ -243,14 +253,10 @@
             <div class="wi-row-txt"><b>Сколько времени</b><span id="wiTime"></span></div>
           </div>
         </div>
-
         <div class="wi-block">
           <h4>На карте</h4>
           <div class="wi-coords" id="wiCoords"></div>
-          <a class="btn btn-ghost wi-maps" id="wiMaps" target="_blank" rel="noopener">
-            <svg width="16" height="16" viewBox="0 0 24 24" fill="none"><path d="M12 21s7-6.1 7-11a7 7 0 10-14 0c0 4.9 7 11 7 11z" stroke="currentColor" stroke-width="1.9"/><circle cx="12" cy="10" r="2.6" stroke="currentColor" stroke-width="1.9"/></svg>
-            Открыть в Google Maps
-          </a>
+          <a class="btn btn-ghost wi-maps" id="wiMaps" target="_blank" rel="noopener">Открыть в Google Maps</a>
         </div>
       </div>
     </aside>

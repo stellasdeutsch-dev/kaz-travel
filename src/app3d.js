@@ -367,7 +367,7 @@ export class App3D {
     if (a >= 1.3) return { pos: new THREE.Vector3(0, 28, 30), target: new THREE.Vector3(0, 6.5, 0.5) };
     if (a >= 0.9) return { pos: new THREE.Vector3(0, 41, 44), target: new THREE.Vector3(0, 9, 0.5) };
     // портрет: карта уходит ниже под заголовок, камера дальше — иначе страна не влезает по ширине
-    return { pos: new THREE.Vector3(0, 62, 66), target: new THREE.Vector3(0, 15, 0.5) };
+    return { pos: new THREE.Vector3(0, 56, 60), target: new THREE.Vector3(0, 10, 0.5) };
   }
 
   resetView() {
@@ -460,6 +460,8 @@ export class App3D {
 
   // ================= ЦИКЛ =================
   frame() {
+    // слой скрыт (открыта другая страница) — не тратим ресурсы
+    if (!this.walk && this.stage.classList.contains('stage-hidden')) return;
     const dt = Math.min(this.clock.getDelta(), 0.05);
     const t = this.clock.elapsedTime;
 
