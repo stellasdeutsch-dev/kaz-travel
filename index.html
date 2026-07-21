@@ -27,11 +27,15 @@
     <div id="labels"></div>
   </div>
 
+  <div id="progress"></div>
+
   <header id="nav">
     <a class="logo" href="#/"><span class="logo-dot"></span>QAZAQSTAN<span class="logo-thin">.travel</span></a>
     <nav class="nav-links">
       <a href="#/" data-nav="home">Карта</a>
       <a href="#/places" data-nav="places">Места</a>
+      <a href="#/regions" data-nav="regions">Регионы</a>
+      <a href="#/activities" data-nav="activities">Впечатления</a>
       <a href="#/plan" data-nav="plan">Спланировать</a>
     </nav>
     <a class="btn btn-primary btn-sm nav-cta" href="https://kazakhstan.travel/ru" target="_blank" rel="noopener">Официальный портал</a>
@@ -164,11 +168,60 @@
     </section>
   </main>
 
+  <!-- ======================= РЕГИОНЫ ======================= -->
+  <main data-page="regions" hidden>
+    <section class="plan-head">
+      <div class="page-eyebrow">Куда поехать</div>
+      <h1 class="plan-title">20 регионов —<br/>20 характеров</h1>
+    </section>
+    <section class="regions-wrap">
+      <div class="regions20" id="regions20"></div>
+    </section>
+    <footer>
+      <div class="foot-inner">
+        <div class="foot-left"><span class="logo-dot"></span>QAZAQSTAN<span class="logo-thin">.travel</span></div>
+        <div class="foot-note">Число объектов — по каталогу <a href="https://kazakhstan.travel/ru" target="_blank" rel="noopener">kazakhstan.travel</a>.</div>
+        <div>© <span class="year"></span></div>
+      </div>
+    </footer>
+  </main>
+
+  <!-- ======================= ВПЕЧАТЛЕНИЯ ======================= -->
+  <main data-page="activities" hidden>
+    <section class="plan-head">
+      <div class="page-eyebrow">Виды туризма</div>
+      <h1 class="plan-title">13 способов<br/>прожить степь</h1>
+    </section>
+    <section class="acts-wrap">
+      <div class="acts" id="actsGrid"></div>
+    </section>
+    <section class="cta-wrap">
+      <div class="cta">
+        <h2>Выбрали своё?<br/><span class="gold">Стройте маршрут</span></h2>
+        <div class="cta-actions">
+          <a class="btn btn-gold" href="#/plan">Спланировать поездку</a>
+          <a class="btn btn-ghost" href="#/places">Смотреть места</a>
+        </div>
+      </div>
+    </section>
+    <footer>
+      <div class="foot-inner">
+        <div class="foot-left"><span class="logo-dot"></span>QAZAQSTAN<span class="logo-thin">.travel</span></div>
+        <div class="foot-note">Классификация видов туризма — <a href="https://kazakhstan.travel/ru" target="_blank" rel="noopener">kazakhstan.travel</a>.</div>
+        <div>© <span class="year"></span></div>
+      </div>
+    </footer>
+  </main>
+
   <!-- ======================= СПЛАНИРОВАТЬ ======================= -->
   <main data-page="plan" hidden>
     <section class="plan-head">
-      <h1 class="plan-title reveal">Спланировать<br/>поездку</h1>
+      <div class="page-eyebrow">Информация для туриста</div>
+      <h1 class="plan-title">Спланировать<br/>поездку</h1>
     </section>
+
+    <!-- Быстрые факты -->
+    <section class="qfacts" id="qfacts"></section>
 
     <!-- Сезоны: интерактивный переключатель -->
     <section class="seasons-widget reveal" id="seasonWidget">
@@ -200,10 +253,11 @@
       <div class="lane" id="unescoLane"></div>
     </section>
 
-    <!-- Регионы: компакт -->
-    <section class="plan-regions">
-      <h2 class="lane-title reveal">Куда ехать за чем</h2>
-      <div class="regions" id="regionGrid"></div>
+    <!-- Разговорник: флип-карточки -->
+    <section class="phrases-wrap">
+      <h2 class="lane-title reveal">Скажите по-казахски</h2>
+      <p class="lane-sub reveal">Нажмите на карточку, чтобы увидеть перевод.</p>
+      <div class="phrases" id="phrases"></div>
     </section>
 
     <footer>

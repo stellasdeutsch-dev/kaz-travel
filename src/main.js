@@ -1,6 +1,6 @@
 import './style.css';
 import { LOCATIONS, EXPERIENCES, mapsUrl } from './locations.js';
-import { REGIONS, UNESCO, SEASONS, PRACTICAL, EVENTS } from './content.js';
+import { REGIONS_ALL, ACTIVITIES, PHRASES, QUICKFACTS, UNESCO, SEASONS, PRACTICAL, EVENTS } from './content.js';
 import { App3D } from './app3d.js';
 
 const $ = (s) => document.querySelector(s);
@@ -28,6 +28,13 @@ const ICONS = {
   flower: S('<path d="M12 9a3 3 0 100 6 3 3 0 000-6z"/><path d="M12 9c0-2.5-1-4-2.5-4S7 6.2 7 8s1.8 3.2 3.5 3.4M12 9c0-2.5 1-4 2.5-4S17 6.2 17 8s-1.8 3.2-3.5 3.4"/><path d="M12 15v6M9.5 21h5"/>'),
   food: S('<path d="M6 3v8a2.5 2.5 0 005 0V3M8.5 11v10"/><path d="M17 3c-1.7 1.4-2.5 3.4-2.5 5.5S15.3 12 17 12.5V21"/>'),
   spa: S('<path d="M12 12c0-4 2.5-7 6.5-8 .6 4.5-2 8-6.5 8zm0 0c0-4-2.5-7-6.5-8C4.9 8.5 7.5 12 12 12z"/><path d="M4 17c1.8 1.4 3.4 1.4 5.2 0 1.8-1.4 3.4-1.4 5.2 0 1.8 1.4 3.4 1.4 5.6-.2"/>'),
+  trophy: S('<path d="M8 4h8v6a4 4 0 01-8 0z"/><path d="M8 5H4.5v2A3.5 3.5 0 008 10.5M16 5h3.5v2A3.5 3.5 0 0116 10.5"/><path d="M12 14v3m-4 4h8m-6.5 0v-2.5a1.5 1.5 0 013 0V21"/>'),
+  factory: S('<path d="M3 21V9l6 4V9l6 4V4h6v17z"/><path d="M7 17h2m4 0h2"/>'),
+  leaf: S('<path d="M5 21C5 12 11 5 21 4c0 10-6 16-15 16"/><path d="M5 21c2-5 6-9 11-11"/>'),
+  briefcase: S('<rect x="3" y="7.5" width="18" height="13" rx="2.5"/><path d="M9 7.5V6a2 2 0 012-2h2a2 2 0 012 2v1.5M3 13h18"/>'),
+  bolt: S('<path d="M13 2L4.5 14H10l-1.5 8L18 10h-5.5z"/>'),
+  star: S('<path d="M12 3l2.6 5.5 6 .8-4.4 4.2 1.1 6L12 16.6 6.7 19.5l1.1-6L3.4 9.3l6-.8z"/>'),
+  columns: S('<path d="M3 21h18M4 8h16M12 3L4 8m8-5l8 5"/><path d="M6 8v13m4-13v13m4-13v13m4-13v13"/>'),
 };
 
 /* ================================================================
@@ -82,7 +89,11 @@ function setSeason(i) {
   const s = SEASONS[i];
   const st = $('#seasonStage');
   st.className = `season-stage s${i}`;
-  $('#seasonTemp').textContent = s.temp.replace(' °C', '°');
+  const temp = $('#seasonTemp');
+  temp.textContent = s.temp.replace(' °C', '°');
+  temp.classList.remove('swap');
+  void temp.offsetWidth;                 // перезапуск анимации смены температуры
+  temp.classList.add('swap');
   $('#seasonMonths').textContent = `${s.name} · ${s.months}`;
   $('#seasonText').textContent = s.text;
 }
@@ -122,11 +133,52 @@ $('#practicalAcc').innerHTML = PRACTICAL.map(
   <div class="acc-body"><p>${p.html}</p>${p.note ? `<div class="acc-note">${p.note}</div>` : ''}</div>`
 ).join('');
 
-// регионы
-$('#regionGrid').innerHTML = REGIONS.map(
-  (r) => `<div class="region reveal">
-    <h3>${r.name}</h3><p>${r.text}</p>
-    <ul>${r.spots.map((s) => `<li>${s}</li>`).join('')}</ul>
+// быстрые факты
+$('#qfacts').innerHTML = QUICKFACTS.map(
+  (q) => `<div class="qfact reveal"><div class="qfact-v">${q.v}</div><div class="qfact-c">${q.c}</div></div>`
+).join('');
+
+// разговорник — флип-карточки
+$('#phrases').innerHTML = PHRASES.map(
+  (p) => `<button class="flip reveal" aria-label="${p.kk} — ${p.ru}">
+    <span class="flip-inner">
+      <span class="flip-face flip-front">${p.kk}</span>
+      <span class="flip-face flip-back">${p.ru}</span>
+    </span>
+  </button>`
+).join('');
+$('#phrases').addEventListener('click', (e) => {
+  const f = e.target.closest('.flip');
+  if (f) f.classList.toggle('flipped');
+});
+
+/* ================================================================
+   РЕГИОНЫ (20) и ВПЕЧАТЛЕНИЯ (13)
+   ================================================================ */
+$('#regions20').innerHTML = REGIONS_ALL.map(
+  (r, i) => `
+  <button class="rcard reveal" data-i="${i}">
+    <span class="rcard-head">
+      <span class="rcard-name">${r.name}</span>
+      ${r.count ? `<span class="rcard-count">${r.count}<i>объекта(ов)</i></span>` : '<span class="rcard-count new">новое</span>'}
+    </span>
+    <span class="rcard-center">${r.center}</span>
+    <span class="rcard-more">
+      <span class="rcard-line">${r.line}</span>
+      <span class="rcard-spots">${r.spots.map((s) => `<i>${s}</i>`).join('')}</span>
+    </span>
+  </button>`
+).join('');
+$('#regions20').addEventListener('click', (e) => {
+  const c = e.target.closest('.rcard');
+  if (c) c.classList.toggle('open');
+});
+
+$('#actsGrid').innerHTML = ACTIVITIES.map(
+  (a) => `<div class="act reveal">
+    <div class="act-ico">${ICONS[a.icon]}</div>
+    <h3>${a.title}</h3>
+    <p>${a.line}</p>
   </div>`
 ).join('');
 
@@ -299,11 +351,8 @@ function fillPlace(id) {
 /* ================================================================
    РОУТЕР
    ================================================================ */
-const pages = {
-  home: document.querySelector('main[data-page="home"]'),
-  place: document.querySelector('main[data-page="place"]'),
-  plan: document.querySelector('main[data-page="plan"]'),
-};
+const pages = {};
+document.querySelectorAll('main[data-page]').forEach((el) => (pages[el.dataset.page] = el));
 let current = 'home';
 
 function syncStage() {
@@ -313,13 +362,21 @@ function syncStage() {
 }
 
 function showPage(name) {
+  const changed = current !== name;
   current = name;
   for (const [k, el] of Object.entries(pages)) el.hidden = k !== name;
   document.querySelectorAll('[data-nav]').forEach((a) => {
-    a.classList.toggle('active', a.dataset.nav === name || (name === 'home' && a.dataset.nav === 'places'));
+    a.classList.toggle('active', a.dataset.nav === name);
   });
   syncStage();
   observeReveals();
+  // анимация входа страницы
+  if (changed) {
+    const el = pages[name];
+    el.classList.remove('page-enter');
+    void el.offsetWidth;
+    el.classList.add('page-enter');
+  }
 }
 
 function route() {
@@ -329,8 +386,8 @@ function route() {
     if (!ok) { location.hash = '#/'; return; }
     showPage('place');
     scrollTo(0, 0);
-  } else if (h === '#/plan') {
-    showPage('plan');
+  } else if (h === '#/plan' || h === '#/regions' || h === '#/activities') {
+    showPage(h.slice(2));
     scrollTo(0, 0);
   } else if (h === '#/places') {
     showPage('home');
@@ -347,8 +404,11 @@ addEventListener('hashchange', route);
    СКРОЛЛ-ЭФФЕКТЫ
    ================================================================ */
 const nav = $('#nav');
+const progress = $('#progress');
 addEventListener('scroll', () => {
   nav.classList.toggle('scrolled', scrollY > 30);
+  const max = document.documentElement.scrollHeight - innerHeight;
+  progress.style.width = max > 0 ? `${(scrollY / max) * 100}%` : '0%';
   parallax();
 }, { passive: true });
 
@@ -400,6 +460,44 @@ const ioNum = new IntersectionObserver(
 document.querySelectorAll('.bignum-v').forEach((el) => ioNum.observe(el));
 
 document.querySelectorAll('.year').forEach((el) => (el.textContent = new Date().getFullYear()));
+
+/* ================================================================
+   АНИМАЦИИ
+   ================================================================ */
+// заголовок hero: буквы взлетают по очереди
+(() => {
+  const title = document.querySelector('.hero-title');
+  title.classList.remove('reveal');
+  const wrap = (text, cls) =>
+    [...text].map((ch, i) => `<span class="hl ${cls}" style="animation-delay:${0.35 + i * 0.055}s">${ch}</span>`).join('');
+  const gradEl = title.querySelector('.grad');
+  const plain = title.firstChild.textContent;   // «КАЗАХ»
+  const grad = gradEl.textContent;              // «СТАН»
+  title.innerHTML = wrap(plain, '') + wrap(grad, 'hl-grad');
+  // градиентным буквам смещаем позицию фона, чтобы градиент шёл по всему слову
+  title.querySelectorAll('.hl-grad').forEach((el, i, all) => {
+    el.style.backgroundPosition = `${(i / Math.max(all.length - 1, 1)) * 100}% 0`;
+  });
+})();
+
+// 3D-наклон фото-тайлов за курсором
+document.querySelectorAll('.tile').forEach((tile) => {
+  tile.addEventListener('pointermove', (e) => {
+    if (matchMedia('(pointer: coarse)').matches) return;
+    const r = tile.getBoundingClientRect();
+    const x = (e.clientX - r.left) / r.width - 0.5;
+    const y = (e.clientY - r.top) / r.height - 0.5;
+    tile.style.transform = `perspective(1200px) rotateX(${(-y * 3).toFixed(2)}deg) rotateY(${(x * 3).toFixed(2)}deg)`;
+  });
+  tile.addEventListener('pointerleave', () => { tile.style.transform = ''; });
+});
+
+// каскадные появления внутри сеток и лент
+document.querySelectorAll('.tiles, .strip, .lane, .acts, .regions20, .phrases, .bignums, .qfacts').forEach((group) => {
+  [...group.children].forEach((el, i) => {
+    if (el.classList.contains('reveal')) el.style.transitionDelay = `${Math.min(i % 8, 5) * 70}ms`;
+  });
+});
 
 route();
 parallax();
