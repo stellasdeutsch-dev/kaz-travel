@@ -101,6 +101,16 @@ seg.addEventListener('click', (e) => {
   const b = e.target.closest('button');
   if (b) setSeason(+b.dataset.i);
 });
+// парящие частицы внутри виджета сезонов
+{
+  const sfx = document.createElement('span');
+  sfx.className = 'sfx';
+  sfx.setAttribute('aria-hidden', 'true');
+  sfx.innerHTML = Array.from({ length: 12 }, () =>
+    `<i style="left:${(Math.random() * 100).toFixed(1)}%;animation-delay:${(Math.random() * 6).toFixed(2)}s;animation-duration:${(5 + Math.random() * 4).toFixed(2)}s"></i>`
+  ).join('');
+  $('#seasonStage').appendChild(sfx);
+}
 // сезоны в массиве начинаются с весны (март), поэтому сдвигаем месяц на два
 setSeason(Math.floor(((new Date().getMonth() - 2 + 12) % 12) / 3));
 
@@ -155,14 +165,24 @@ $('#phrases').addEventListener('click', (e) => {
 /* ================================================================
    РЕГИОНЫ (20) и ВПЕЧАТЛЕНИЯ (13)
    ================================================================ */
+const plural = (n, one, few, many) => {
+  const m = n % 100;
+  if (m > 4 && m < 21) return many;
+  const d = m % 10;
+  return d === 1 ? one : d > 1 && d < 5 ? few : many;
+};
+const MAX_COUNT = Math.max(...REGIONS_ALL.map((r) => r.count));
 $('#regions20').innerHTML = REGIONS_ALL.map(
   (r, i) => `
   <button class="rcard reveal" data-i="${i}">
     <span class="rcard-head">
       <span class="rcard-name">${r.name}</span>
-      ${r.count ? `<span class="rcard-count">${r.count}<i>объекта(ов)</i></span>` : '<span class="rcard-count new">новое</span>'}
+      ${r.count
+        ? `<span class="rcard-count"><b data-count="${r.count}">0</b><i>${plural(r.count, 'объект', 'объекта', 'объектов')}</i></span>`
+        : '<span class="rcard-count new">новое</span>'}
     </span>
     <span class="rcard-center">${r.center}</span>
+    <span class="rcard-bar"><b class="${r.count ? '' : 'gold'}" style="--w:${Math.max(4, (r.count / MAX_COUNT) * 100).toFixed(1)}%"></b></span>
     <span class="rcard-more">
       <span class="rcard-line">${r.line}</span>
       <span class="rcard-spots">${r.spots.map((s) => `<i>${s}</i>`).join('')}</span>
@@ -457,7 +477,7 @@ function observeReveals() {
   document.querySelectorAll('.reveal').forEach((el) => io.observe(el));
 }
 
-/* счётчики больших цифр */
+/* счётчики: любая цифра с data-count оживает при появлении */
 const fmt = new Intl.NumberFormat('ru-RU');
 const ioNum = new IntersectionObserver(
   (entries) => {
@@ -465,11 +485,12 @@ const ioNum = new IntersectionObserver(
       if (!en.isIntersecting || en.target.dataset.done) continue;
       en.target.dataset.done = '1';
       const total = +en.target.dataset.count;
-      if (total < 100) { en.target.textContent = total; continue; }
+      const dur = total >= 1000 ? 1500 : 900;
       const t0 = performance.now();
       const step = (now) => {
-        const k = Math.min((now - t0) / 1500, 1);
-        en.target.textContent = fmt.format(Math.round(total * (1 - Math.pow(1 - k, 3))));
+        const k = Math.min((now - t0) / dur, 1);
+        const val = Math.round(total * (1 - Math.pow(1 - k, 3)));
+        en.target.textContent = total >= 1000 ? fmt.format(val) : val;
         if (k < 1) requestAnimationFrame(step);
       };
       requestAnimationFrame(step);
@@ -477,7 +498,7 @@ const ioNum = new IntersectionObserver(
   },
   { threshold: 0.5 }
 );
-document.querySelectorAll('.bignum-v').forEach((el) => ioNum.observe(el));
+document.querySelectorAll('[data-count]').forEach((el) => ioNum.observe(el));
 
 document.querySelectorAll('.year').forEach((el) => (el.textContent = new Date().getFullYear()));
 
@@ -499,6 +520,17 @@ document.querySelectorAll('.year').forEach((el) => (el.textContent = new Date().
     el.style.backgroundPosition = `${(i / Math.max(all.length - 1, 1)) * 100}% 0`;
   });
 })();
+
+// заголовки разделов: слова взлетают по очереди при входе на страницу
+document.querySelectorAll('.plan-title').forEach((t) => {
+  const lines = t.innerHTML.split(/<br\s*\/?>/i);
+  let n = 0;
+  t.innerHTML = lines
+    .map((line) =>
+      line.trim().split(/\s+/).map((w) => `<span class="tw" style="animation-delay:${(0.08 + n++ * 0.07).toFixed(2)}s">${w}</span>`).join(' ')
+    )
+    .join('<br/>');
+});
 
 // 3D-наклон фото-тайлов за курсором
 document.querySelectorAll('.tile').forEach((tile) => {
