@@ -16,7 +16,7 @@ export const toX = (lon) => (lon - CLON) * COSLAT * K;
 export const toZ = (lat) => -(lat - CLAT) * K;
 
 const MAP_TOP = 0.7; // высота "плиты" карты
-const MAP_BLOOM = { strength: 0.14, radius: 0.45, threshold: 0.95 };
+const MAP_BLOOM = { strength: 0.16, radius: 0.5, threshold: 0.93 };
 
 function easeInOut(t) { return t < 0.5 ? 4 * t * t * t : 1 - Math.pow(-2 * t + 2, 3) / 2; }
 
@@ -118,33 +118,33 @@ export class App3D {
   // ================= КАРТА =================
   buildMapScene() {
     const scene = new THREE.Scene();
-    scene.background = new THREE.Color(0xd6eaf3);
-    scene.fog = new THREE.Fog(0xd6eaf3, 60, 145);
+    scene.background = new THREE.Color(0x0a0a0f);
+    scene.fog = new THREE.Fog(0x0a0a0f, 60, 150);
     scene.environment = this.envMap;
-    scene.environmentIntensity = 0.85;
+    scene.environmentIntensity = 0.5;
 
-    // дневной свет: мягкий верхний + тёплый ключевой + голубая подсветка снизу
-    scene.add(new THREE.HemisphereLight(0xffffff, 0xc4dbe4, 1.15));
-    const key = new THREE.DirectionalLight(0xfff6e6, 1.5);
+    // студийный свет: белая плита «продуктово» подсвечена на чёрном
+    scene.add(new THREE.HemisphereLight(0xffffff, 0x1a1a24, 0.6));
+    const key = new THREE.DirectionalLight(0xfff2e0, 0.95);
     key.position.set(-16, 28, 14);
     scene.add(key);
-    const fill = new THREE.DirectionalLight(0x9fd4e4, 0.55);
+    const fill = new THREE.DirectionalLight(0x8fb8e0, 0.5);
     fill.position.set(22, 10, -18);
     scene.add(fill);
 
-    // мягкие цветовые пятна атмосферы (голубое и золотое)
-    const washSky = new THREE.Sprite(new THREE.SpriteMaterial({
-      map: glowTexture('rgba(0,175,202,0.13)'), transparent: true, depthWrite: false,
+    // холодное и тёплое свечение в глубине кадра
+    const washBlue = new THREE.Sprite(new THREE.SpriteMaterial({
+      map: glowTexture('rgba(41,151,255,0.10)'), transparent: true, depthWrite: false,
     }));
-    washSky.scale.setScalar(95);
-    washSky.position.set(-28, -8, -34);
-    scene.add(washSky);
-    const washGold = new THREE.Sprite(new THREE.SpriteMaterial({
-      map: glowTexture('rgba(254,197,12,0.14)'), transparent: true, depthWrite: false,
+    washBlue.scale.setScalar(100);
+    washBlue.position.set(-28, -6, -36);
+    scene.add(washBlue);
+    const washWarm = new THREE.Sprite(new THREE.SpriteMaterial({
+      map: glowTexture('rgba(232,184,75,0.07)'), transparent: true, depthWrite: false,
     }));
-    washGold.scale.setScalar(80);
-    washGold.position.set(30, -6, -20);
-    scene.add(washGold);
+    washWarm.scale.setScalar(85);
+    washWarm.position.set(30, -4, -22);
+    scene.add(washWarm);
 
     // лёгкая взвесь в воздухе
     const dustGeo = new THREE.BufferGeometry();
@@ -156,16 +156,16 @@ export class App3D {
     }
     dustGeo.setAttribute('position', new THREE.BufferAttribute(dustPos, 3));
     this.dust = new THREE.Points(dustGeo, new THREE.PointsMaterial({
-      map: glowTexture('rgba(120,170,190,0.85)'), size: 0.3,
-      transparent: true, opacity: 0.35, depthWrite: false,
+      map: glowTexture('rgba(180,200,230,0.8)'), size: 0.28,
+      transparent: true, opacity: 0.3, depthWrite: false, blending: THREE.AdditiveBlending,
     }));
     scene.add(this.dust);
 
-    // мягкая тень под «плитой» карты
+    // мягкое световое пятно под «плитой» карты
     const shadow = new THREE.Mesh(
       new THREE.CircleGeometry(30, 48),
       new THREE.MeshBasicMaterial({
-        map: glowTexture('rgba(90,130,150,0.45)', 'rgba(214,234,243,0)'),
+        map: glowTexture('rgba(70,90,130,0.35)', 'rgba(10,10,15,0)'),
         transparent: true, depthWrite: false,
       })
     );
@@ -203,12 +203,12 @@ export class App3D {
     });
     geo.rotateX(-Math.PI / 2);
 
-    // светлая «фарфоровая» плита с голубым отливом и золотым торцом
+    // белая «фарфоровая» плита с приглушённым золотым торцом
     const topMat = new THREE.MeshStandardMaterial({
-      color: 0xfdfefe, metalness: 0.08, roughness: 0.55, envMapIntensity: 0.7,
+      color: 0xbfc6d4, metalness: 0.15, roughness: 0.6, envMapIntensity: 0.4,
     });
     const sideMat = new THREE.MeshStandardMaterial({
-      color: 0xe6c47f, metalness: 0.5, roughness: 0.35, envMapIntensity: 1.15,
+      color: 0xc9a75f, metalness: 0.55, roughness: 0.35, envMapIntensity: 1.0,
     });
     const country = new THREE.Mesh(geo, [topMat, sideMat]);
     this.mapGroup.add(country);
@@ -218,7 +218,7 @@ export class App3D {
     linePts.push(linePts[0].clone());
     const line = new THREE.Line(
       new THREE.BufferGeometry().setFromPoints(linePts),
-      new THREE.LineBasicMaterial({ color: 0x00879e, transparent: true, opacity: 0.85 })
+      new THREE.LineBasicMaterial({ color: 0xd8b25a, transparent: true, opacity: 0.55 })
     );
     this.mapGroup.add(line);
 
@@ -233,7 +233,7 @@ export class App3D {
     const gridGeo = new THREE.BufferGeometry();
     gridGeo.setAttribute('position', new THREE.Float32BufferAttribute(inside, 3));
     this.mapGroup.add(new THREE.Points(gridGeo, new THREE.PointsMaterial({
-      color: 0x5f9cb0, size: 0.085, transparent: true, opacity: 0.5,
+      color: 0x9aa4b8, size: 0.08, transparent: true, opacity: 0.45,
     })));
   }
 
@@ -256,7 +256,8 @@ export class App3D {
     for (const loc of LOCATIONS) {
       const g = new THREE.Group();
       g.position.set(toX(loc.lon), MAP_TOP, toZ(loc.lat));
-      const accent = new THREE.Color(loc.accent);
+      // единый акцент для всех маркеров — сдержанная «системная» палитра
+      const accent = new THREE.Color(0x2997ff);
       const deep = accent.clone().multiplyScalar(0.72);
 
       // тень-подпятник на плите
@@ -271,9 +272,9 @@ export class App3D {
       stem.position.y = 0.55;
       g.add(stem);
 
-      // белая обводка: видна только «дальняя» сторона сферы, поэтому получается контур
+      // тёмная обводка: видна только «дальняя» сторона сферы, поэтому получается контур
       const outline = new THREE.Mesh(outlineGeo, new THREE.MeshBasicMaterial({
-        color: 0x123640, side: THREE.BackSide,
+        color: 0x0a1626, side: THREE.BackSide,
       }));
       outline.position.y = 1.12;
       g.add(outline);
