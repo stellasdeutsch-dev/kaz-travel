@@ -131,6 +131,50 @@ main[data-page='home'] .after-hero { pointer-events: auto; }
 .nav-links a.active { color: #fff; background: rgba(255, 255, 255, 0.14); box-shadow: var(--sheen); }
 .nav-links a::after { display: none; }
 
+/* ============ БУРГЕР-МЕНЮ (моб.) ============ */
+.nav-burger {
+  display: none; flex-direction: column; align-items: center; justify-content: center; gap: 5px;
+  width: 38px; height: 38px; border-radius: 50%; border: none;
+  background: transparent; flex: none;
+}
+.nav-burger span {
+  display: block; width: 18px; height: 2px; border-radius: 2px; background: var(--text);
+  transition: transform 0.32s cubic-bezier(0.2, 0.8, 0.25, 1), opacity 0.22s, width 0.22s;
+}
+.nav-burger[aria-expanded='true'] span:nth-child(1) { transform: translateY(7px) rotate(45deg); }
+.nav-burger[aria-expanded='true'] span:nth-child(2) { opacity: 0; }
+.nav-burger[aria-expanded='true'] span:nth-child(3) { transform: translateY(-7px) rotate(-45deg); }
+
+.nav-menu {
+  position: fixed; inset: 0; z-index: 150;
+  display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 46px;
+  background: rgba(8, 8, 12, 0.82);
+  -webkit-backdrop-filter: blur(34px) saturate(1.8); backdrop-filter: blur(34px) saturate(1.8);
+  opacity: 0; visibility: hidden; transform: scale(1.02);
+  transition: opacity 0.38s cubic-bezier(0.2, 0.8, 0.25, 1), transform 0.38s cubic-bezier(0.2, 0.8, 0.25, 1), visibility 0.38s;
+}
+.nav-menu.open { opacity: 1; visibility: visible; transform: none; }
+.nav-menu-links { display: flex; flex-direction: column; align-items: center; gap: 6px; }
+.nav-menu-links a {
+  font-size: clamp(30px, 9vw, 44px); font-weight: 700; letter-spacing: -0.03em; color: var(--text-2);
+  padding: 10px 18px; border-radius: var(--r-md);
+  opacity: 0; transform: translateY(16px);
+  transition: color 0.22s, opacity 0.4s ease, transform 0.4s cubic-bezier(0.2, 0.8, 0.25, 1);
+}
+.nav-menu.open .nav-menu-links a { opacity: 1; transform: none; }
+.nav-menu-links a:nth-child(1) { transition-delay: 0.06s; }
+.nav-menu-links a:nth-child(2) { transition-delay: 0.11s; }
+.nav-menu-links a:nth-child(3) { transition-delay: 0.16s; }
+.nav-menu-links a:nth-child(4) { transition-delay: 0.21s; }
+.nav-menu-links a:nth-child(5) { transition-delay: 0.26s; }
+.nav-menu-links a.active { color: var(--accent); }
+.nav-menu-cta {
+  opacity: 0; transform: translateY(16px);
+  transition: opacity 0.4s ease, transform 0.4s cubic-bezier(0.2, 0.8, 0.25, 1);
+  transition-delay: 0.32s;
+}
+.nav-menu.open .nav-menu-cta { opacity: 1; transform: none; }
+
 /* ============ КНОПКИ ============ */
 .btn {
   position: relative; overflow: hidden;
@@ -708,9 +752,10 @@ main[data-page='plan'], main[data-page='regions'], main[data-page='activities'] 
 }
 @media (max-width: 1024px) { #walkInfo { width: 380px; } }
 @media (max-width: 900px) {
-  #nav { top: 10px; padding: 8px 10px 8px 16px; gap: 12px; }
+  #nav { top: 10px; padding: 6px 6px 6px 16px; gap: 10px; }
   .nav-links { display: none; }
-  .nav-cta { padding: 9px 15px; font-size: 12.5px; }
+  .nav-cta { display: none; }
+  .nav-burger { display: flex; }
   .hero-hint { display: none; }
   .scroll-down { right: 16px; }
   .foot-inner { padding: 26px 18px; }

@@ -401,6 +401,26 @@ function route() {
 addEventListener('hashchange', route);
 
 /* ================================================================
+   МОБИЛЬНОЕ МЕНЮ (бургер)
+   ================================================================ */
+const navBurger = $('#navBurger');
+const navMenu = $('#navMenu');
+
+function setMenu(open) {
+  navMenu.classList.toggle('open', open);
+  navBurger.setAttribute('aria-expanded', String(open));
+  document.body.style.overflow = open ? 'hidden' : '';
+}
+navBurger.addEventListener('click', () => setMenu(!navMenu.classList.contains('open')));
+navMenu.querySelectorAll('a').forEach((a) => a.addEventListener('click', () => setMenu(false)));
+addEventListener('keydown', (e) => {
+  if (e.code === 'Escape' && navMenu.classList.contains('open')) setMenu(false);
+});
+matchMedia('(min-width: 901px)').addEventListener('change', (e) => {
+  if (e.matches) setMenu(false);
+});
+
+/* ================================================================
    СКРОЛЛ-ЭФФЕКТЫ
    ================================================================ */
 const nav = $('#nav');
